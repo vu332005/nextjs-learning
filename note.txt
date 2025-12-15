@@ -1,0 +1,156 @@
+- react là 1 lib
+- nextjs là 1 framework React
+- Next.js = React + Routing + SSR + API + Tối ưu hoá → Dùng để xây web hiện đại, nhanh, SEO tốt, code gọn.
+
+- lý do dùng nextJs
+    + vì react flexible -> không có kiến trúc thống nhất - structure / router / manage state (người dùng reducer / người thì redux.. ) 
+    -> nextJs ra đời như để tạo 1 khung chung -> chỉ cần code trong khung đó
+    -> đồng thời nó cũng tối ưu tốt cho SEO 
+
+- nextJs là 1 fullStack framework
+    - nhưng ta dùng chính cho frontend -> chỉ hỗ trợ cơ bản về backend
+    -> vì khi thêm code của bankend vào của frontend -> structure sẽ rất khó maintain + và không đảm bảo về tính an toàn
+        -> ta dùng cho frontend là chính còn backend chỉ để hỗ trợ
+
+- tính năng 
+    - render
+        + ssr
+        + csr
+        + ssg
+        + isr
+    - routing
+        + routing theo cấu trúc file trong thư mục /app hoặc /pages -> không cần dùng react-router
+    - API routes -> backend mini 
+        + có thể tạo API ngay trong dự án nextJs 
+        -> không dùng cho những dự án lớn -> như đã viết ở trên -> vì rất rối
+        -> chỉ nên dùng thuần cho frontend
+    - tối ưu hóa Built-in
+    - middleWare của nextJs
+
+- client side rendering - csr
+    -> tức là render hoàn toàn ở trình duyệt
+    (reactJs là 1 ví dụ điển hình cho csr)
+
+    tổng quát
+        - người dùng vào 1 trang web
+        - server gửi về 1 html trống rỗng(rất ít nội dung) + 1 tệp js khá nặng
+        - browser tải tệp js
+        - js chạy trên trình duyệt -> gọi api lấy dữ liệu -> tự tạo ra các thẻ HTML trên màn hình
+        -> ta hiểu đơn giản là việc render thực hiện ở phía browser(client) vì bản chất nó chỉ cầm 1 file html ít nội dụng
+        còn lại tất cả các nội dung hiển thị... -> là do thằng js ở phía client gắn vào thẻ html để hiển thị
+        - nhược điểm
+            + SEO kém -> vì bot gg vào trang web chỉ thấy 1 html trắng
+            + tải lần đầu chậm -> vì phải đợi các file JS tải xong
+        - ưu điểm
+            -> SPA -> sau lần đầu tải -> việc vận hành trang rất mượt mà -> vì không cần tải lại toàn bộ trang 
+                -> những lần sau nó chỉ thay đổi việc render các component 
+
+    - ví dụ trực tiếp ở React
+        Browser tải 1 file HTML rỗng (chỉ có <div id="root"></div>).
+        Browser tải file JavaScript (bundle của React).
+        React chạy và tự render UI trong browser.
+        Nếu cần data → dùng useEffect để gọi API từ client → update state → re-render.
+        
+        - Ví dụ dễ hiểu
+            Giống như bạn mua đồ IKEA:
+            Nhà sản xuất chỉ đưa vật liệu + hướng dẫn → bạn tự lắp ghép.
+            React cũng vậy:
+            Server chỉ đưa bộ khung HTML rỗng + file JS → trình duyệt tự render giao diện.
+
+- server side rendering - csr
+    Server render HTML trước, client chỉ tải JS để “hydrate”.
+
+    - Luồng chạy:
+        User → server
+        Server render React thành HTML đầy đủ
+        Browser nhận HTML → hiển thị ngay
+        JavaScript chạy lại để hydrate (thêm event listeners)
+    ➕ Ưu điểm:
+        SEO tốt.
+        First paint nhanh.
+    ➖ Nhược điểm:
+    Server phải render liên tục → tốn tài nguyên.
+    Tương tác ban đầu chậm hơn CSR do hydration.
+        
+        1. Cơ chế hoạt động chi tiết (Under the Hood)
+        - Khác với các trang web tĩnh (Static - file HTML có sẵn), SSR là quá trình "Nấu ăn theo yêu cầu".
+            * Khi người dùng truy cập uRl.com/profile/user123:
+                + Request (Yêu cầu): Trình duyệt gửi yêu cầu đến Server.
+                + Execution (Thực thi): Server nhận yêu cầu, nhưng chưa có file HTML nào cả. Nó bắt đầu chạy bộ mã (Node.js, PHP, Java...).
+                + Data Fetching (Lấy dữ liệu - Bước quan trọng nhất):
+                + Server kết nối tới Database (Cơ sở dữ liệu) hoặc gọi API bên thứ 3.
+            Ví dụ: "Tìm trong bảng User xem ông 'user123' tên là gì, avatar link nào".
+                + Server phải đợi cho đến khi dữ liệu này trả về xong (Blocking).
+                + Templating (Trộn nội dung): Server lấy dữ liệu vừa tìm được, "nhồi" vào khung xương HTML (Template).
+                + Biến {{username}} được thay bằng "Nguyễn Văn A".
+            -> Response (Phản hồi): Server đóng gói file HTML hoàn chỉnh này và gửi về trình duyệt.
+        Điểm mấu chốt: Quá trình từ bước 2 đến bước 5 diễn ra mỗi lần có người truy cập. 1.000 người vào cùng lúc => Server phải "nấu" 1.000 lần (trừ khi có Caching).
+
+    - Tổng kết: Bản chất cốt lõi của SSR
+        + Chuyển dịch gánh nặng: Lấy bớt việc xử lý (render) từ máy người dùng (Client) vác về máy chủ (Server) làm.
+        + Ưu tiên nội dung: Đảm bảo người dùng và Google Bot nhìn thấy nội dung quan trọng nhất sớm nhất có thể.
+        + Đánh đổi: Chấp nhận tốn tài nguyên Server để đổi lấy điểm SEO và trải nghiệm hiển thị ban đầu tốt hơn.
+
+    cách rendering của nextJs
+        + React = chỉ CSR
+        + Next.js = CSR + SSR + SSG + ISR + Streaming + Server Component
+
+    Kỹ thuật	        Thời điểm render	     Dữ liệu	                Ví dụ thực tế
+    CSR (React)	        Tại trình duyệt	        Lấy sau khi load trang	    Dashboard quản trị (Admin), Game.
+    SSG	                Lúc Build (Deploy)	    Cũ (Tĩnh)	                Trang Landing Page, Điều khoản sử dụng.
+    ISR	                Lúc Build + Định kỳ	    Cũ, nhưng được làm mới	    Danh sách sản phẩm TMĐT (giá không đổi từng giây).
+    SSR	                Mỗi Request	            Mới nhất (Real-time)	    Newsfeed Facebook cá nhân hóa.
+    Server Components	Tại Server (kết hợp)	Mới nhất	                Layout chính, Bài viết Blog (Next.js 13+).
+    Streaming	        Song song (Từng phần)	Mới nhất (Không chặn)	    Trang chi tiết sản phẩm (Hình ảnh hiện
+    
+
+    ví dụ:
+    Luồng đi của Next.js hiện đại
+        + Khi bạn dùng Next.js (App Router), quy trình thực tế sẽ là sự pha trộn tinh tế:
+        + Request: User vào trang web.
+        + Server Component (SSR + Streaming): Server bắt đầu render bộ khung. Phần nào xong gửi về trước (Header/Nav). Phần nào nặng (List sản phẩm) thì gửi Loading state.
+        + Client Component (Hydration): Trình duyệt nhận HTML, hiển thị ra. Sau đó tải JS cho các nút bấm, thanh tìm kiếm (Client Component) để chúng hoạt động.
+        + Data Fetching: Trong quá trình này, Server Component có thể tự lấy dữ liệu trực tiếp từ DB mà không cần lộ API ra ngoài.
+        + Đó là lý do tại sao Next.js được gọi là Meta-framework: Nó không bắt bạn chọn 1 cách, nó cho phép bạn trộn tất cả các cách trên trong cùng một trang web để đạt hiệu suất tối đa.
+    Ví dụ dễ hình dung
+        Giống như bạn đi ăn lẩu:
+        Nhà hàng mang nồi + nước trước → (Layout + Header)
+        Sau đó mang rau + mì → (Các component nhẹ)
+        Thịt bò thì lâu hơn, nên họ đưa đĩa rau miễn phí để bạn đỡ đói trước → (Loading component)
+        Khi thịt bò xong → họ mang ra → (streaming nội dung thật)
+    
+    - Client Component (Hydration)
+    - Data Fetching (Server tự lấy dữ liệu)
+
+
+- kiến thức trong vid
+    - client component -> những component render ở phía client
+    - server component -> những component render ở phía server
+    - hybrid app
+    - khi nào sử dụng ssr - csr -> kết hợp sao cho hiệu quả trong nextJs
+        + những dữ liệu hiển thị nặng - tĩnh - ít khi thay đổi -> ném cho thg server làm
+        + những cái hay thay đổi -> ném thg client làm
+        ví dụ:
+            - khi ta vào shoppee
+            + reload 1 trang sản phẩm
+            + ta sẽ thấy header và footer hiện luôn rồi
+            + mà những mục như sản phẩm đã xem / bình luận thì đang load
+            -> những cái mà không hay thay đổi -> ta dùng ssr -> nhanh vì không phải đợi load cả file js
+            -> hay thay đổi -> ta phải dùng csr vì chỉ client mới biết là thay đổi cái gì -> thay đổi luôn ở client
+                - nếu ta để những cái hay thay đổi ở ssr -> mỗi lần thay đổi lại gửi yêu cầu về server - server render rồi trả lại -> hiệu năng sẽ kh bằng render luôn ở client 
+        -> dữ liệu tính -> ssr - dữ liệu động -> csr
+
+    - file-system based routing - *dựa vào các tên file bắt buộc
+        + Route = một folder + file page.tsx
+        | Vai trò                    | Tên file bắt buộc |
+        | -------------------------- | ----------------- |
+        | Nội dung trang             | `page.tsx`        |
+        | Layout của segment         | `layout.tsx`      |
+        | Loading UI                 | `loading.tsx`     |
+        | Error UI                   | `error.tsx`       |
+        | 404 của segment            | `not-found.tsx`   |
+        | Template (remount mỗi lần) | `template.tsx`    |
+
+    note:
+    - ts check type dựa vào file env.d.ts
+- 
