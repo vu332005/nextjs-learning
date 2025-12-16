@@ -151,6 +151,92 @@
         | 404 của segment            | `not-found.tsx`   |
         | Template (remount mỗi lần) | `template.tsx`    |
 
+    - 'use client' -> là 1 chỉ thị (directive) của React/ nextJs
+        tác dụng:
+            - khi đặt ở đầu file component -> bạn đang tuyên bố với complier rằng:
+            => component này và tất cả các component con được import vào nó sẽ chạy ở phía client
+        lý do cần:
+        + trong app router -> mặc định mọi component đều chạy trên server -> chúng chỉ render trên server và gửi html về browser (không gửi kèm js và logic react)
+            -> vì thế use client như  cách bật lại các tính năng react truyền thống
+            
+            Tính năng	    Server Component (Mặc định)	                Client Component (use client)
+            Nơi chạy	    Chỉ trên Server.	                        Render trước trên Server (HTML), sau đó Hydrate (gắn sự kiện) trên Browser.
+            Dữ liệu	        Truy cập trực tiếp Database, File system.	Phải gọi API để lấy dữ liệu.
+            React Hooks	    ❌ Không (useState, useEffect, v.v).	    ✅ Có thể sử dụng tất cả Hooks.
+            Sự kiện	        ❌ Không (onClick, onChange).	        ✅ Có thể lắng nghe sự kiện người dùng.
+            Bundle Size	    0KB (Không gửi code JS về client).	        Tăng kích thước file JS tải xuống.
+        note:
+            + ta hiểu khi gặp use client ở 1 nhánh nào đó -> nó sẽ đánh dấu cả nhánh đó là client boundary
+            -> những component được import vào mặc dù không dùng use client cũng sẽ bị coi là client component
+                -> chỉ dùng use client xuống leaf branch - những phần nhỏ nhất cầ tương tác
+
+    - Link 
+        - tính năng 
+            + chuyển trang mà không tải lại toàn bộ trang (SPA feel)
+            + *prefetching: ..
+            + SEO -> nó vẫn render ra thẻ a thật sự trong HTML -> giúp gg hiểu bot hiểu ctruc trang tốt hơn  
+
+    - useRouter -> là 1 hook cho phép điều hướng trang bằng js logic 
+        -> sử dụng nó khi hành động chuyển trang không phải do ng dùng bấm trực tiếp vào 1 liên kết và do kết quả của 1 qtrinh xử lý
+
+        - Các phương thức chính:
+            router.push(href): Chuyển trang và lưu vào lịch sử (người dùng có thể bấm nút Back để quay lại).
+            router.replace(href): Chuyển trang nhưng không lưu vào lịch sử (thay thế trang hiện tại, bấm Back sẽ không quay lại trang vừa rồi).
+            router.back(): Quay lại trang trước.
+            router.refresh(): Làm mới lại dữ liệu của Server Component hiện tại mà không mất state của Client (Tính năng đặc biệt của App Router).
+
+        Tiêu chí,           <Link>,                                                 useRouter
+        Cách dùng,          Dùng như thẻ HTML trong JSX.,                           Dùng trong hàm xử lý sự kiện (Event Handlers).
+        Loại Component,     Dùng được ở cả Server & Client Component.,              Chỉ dùng được trong Client Component.
+        SEO,                Tốt (Render ra thẻ <a>).,                               Kém (Không tạo ra liên kết ngữ nghĩa).
+        Prefetching,        Tự động (Mặc định là true).,                            Không tự động (Phải dùng router.prefetch thủ công nếu muốn).
+        Trường hợp dùng,    "Menu, danh sách bài viết, footer, link nội bộ.",       "Sau khi submit form, redirect sau bộ đếm giờ, logic phức tạp."
+                            -> tạo 1 liên kết mà người dùng nhìn thấy và              -> khi cần chuyển trang dựa trên logic
+                            bấm chuyển trang ngay lập tức                           -> ví dụ bấm nút này thì sẽ tự động chuyển trang..
+
+    - Layout 
+        giới thiệu:
+            - nếu page.tsx là nội dung chính thay đổi liên tục -> layout.tsx là 1 khung cố định bao quanh nội dung Đó
+        chi tiết
+            - layout là 1 UI giao diện được chia sẻ giữa nhiều routes
+            - *khi người dùng chuyển trang -> layout không bị render lại mà cái thay đổi chỉ là page.tsx
+        phân loại: 2 loại chính
+        - root layout
+            + file: app/layout/tsx
+            + vai trò: đây là 1 layout cấp cao nhất -> bao trùm toàn bộ ứng dụng
+            + Ứng dụng: Thường dùng để đặt Navbar, Footer toàn trang, cấu hình Font chữ, hoặc các Context Provider (Theme, Authen).
+        - nested layout
+            + vị trí: layout.tsx nằm trong các thư mục con (ví dụ: app/dashboard/layout.tsx)
+            + vai trò: layout đó sẽ chỉ áp dụng cho thư mục và các thư mục con của nó - nó vẫn sẽ bị bao bởi thằng rootlayout
+            + Nhiệm vụ: Tạo ra các giao diện phụ. Ví dụ trang Dashboard cần có một Sidebar riêng mà trang Trang chủ không có.
+
+            app/
+            ├── layout.tsx      (Root Layout: Có Navbar chính)
+            ├── page.tsx        (Trang chủ)
+            └── dashboard/
+                ├── layout.tsx  (Dashboard Layout: Có Sidebar admin)
+                └── page.tsx    (Trang thống kê)
+
+            Khi người dùng vào /dashboard: Next.js sẽ lồng ghép như sau: Root Layout -> chứa Dashboard Layout -> chứa Dashboard Page.
+
+        - cơ chế hoạt động
+            - layout thực chất là 1 react component nhận prop children
+                + children chính là các file page.tsx đang được hiển thị
+                + ta có thể chèn các phần cố định xung quanh children (sidebar / header/ footer...)
+            -> *khi ta chuyển page -> Layout sẽ kh bị re-render mà nó chỉ thay đổi thg page thôi        
+        - Ví dụ tổng hợp luồng đi:
+            + Giả sử bạn có cấu trúc: app/shop/layout.tsx và app/shop/page.tsx.
+            + Người dùng truy cập /shop.
+            + Next.js render Root Layout.
+            + Bên trong children của Root Layout, nó render Shop Layout.
+            + Bên trong children của Shop Layout, nó render Shop Page.
+            + Nếu người dùng bấm link sang /shop/shoes:
+            + Root Layout: Giữ nguyên (Không render lại).
+            + Shop Layout: Giữ nguyên (Sidebar shop không load lại).
+            + Shop Page: Bị hủy và thay thế bằng nội dung của trang /shoes.
+    - fetching data trong nextJs
+Ví dụ:
     note:
     - ts check type dựa vào file env.d.ts
-- 
+    - css module
+    - react bootstrap

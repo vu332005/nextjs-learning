@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import Header from "./components/app.header";
+import Footer from "./components/app.footer";
+import Container from "react-bootstrap/Container";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -13,11 +16,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning={true}>
       <body>
-        <header>day la header </header>
-        {children}
-        <footer>day la footer</footer>
+        <Header />
+        <Container>{children}</Container>
+        <Footer />
       </body>
     </html>
   );
