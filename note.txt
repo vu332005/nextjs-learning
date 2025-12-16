@@ -235,6 +235,7 @@
             + Shop Layout: Giữ nguyên (Sidebar shop không load lại).
             + Shop Page: Bị hủy và thay thế bằng nội dung của trang /shoes.
     - fetching data trong nextJs
+    - swr
 Ví dụ:
     note:
     - ts check type dựa vào file env.d.ts

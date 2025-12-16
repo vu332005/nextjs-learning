@@ -18,20 +18,13 @@ export default function Home() {
 
   console.log(">> check data", data);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const res = await fetch("http://localhost:8000/blogs");
-  //     const data = await res.json();
-  //     console.log(data);
-  //   };
-  //   fetchData();
-  // }, []);
-  // khi ta viết như này -> mỗi lần mouting lại page này -> nó sẽ lại gọi data lại 1 lần
-  // -> ta sẽ sử dụng swr để nếu data không mới -> nó sẽ lấy luôn từ cache chứ gửi req mới nữa
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <Tables />
+      <Tables blogs={data} />
     </div>
   );
 }
